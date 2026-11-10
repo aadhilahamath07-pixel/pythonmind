@@ -1,0 +1,13 @@
+# Core project dependencies
+# Install a PyTorch build appropriate for your operating system and hardware:
+# https://pytorch.org/get-started/locally/
+
+numpy
+torch
+tokenizers
+transformers
+datasets
+fastapi
+uvicorn[standard]
+pydantic
+pytest
