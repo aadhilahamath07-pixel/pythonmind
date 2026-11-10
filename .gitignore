@@ -218,3 +218,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# PythonMind temporary files
+__pycache__/
+*.pyc
+
+# Training outputs and temporary files
+runs/
+logs/
+*.log
+
+# Local environment
+.env
+.venv/
