@@ -1,3 +1,4 @@
+
 from tokenizers import Tokenizer
 import torch
 import torch.nn as nn
@@ -13,7 +14,8 @@ class PythonMindModel(nn.Module):
         embedding_dim=64,
         num_heads=4,
         num_layers=2,
-        max_seq_length=128
+        max_seq_length=128,
+        dropout=0.1
     ):
         super().__init__()
 
@@ -31,7 +33,11 @@ class PythonMindModel(nn.Module):
 
         # Transformer blocks
         self.blocks = nn.ModuleList([
-            TransformerBlock(embedding_dim, num_heads)
+            TransformerBlock(
+                embedding_dim,
+                num_heads,
+                dropout=dropout
+            )
             for _ in range(num_layers)
         ])
 
@@ -51,7 +57,8 @@ class PythonMindModel(nn.Module):
             raise ValueError("Input exceeds maximum sequence length")
 
         positions = torch.arange(
-            sequence_length, device=input_ids.device
+            sequence_length,
+            device=input_ids.device
         )
 
         token_vectors = self.token_embedding(input_ids)
@@ -69,20 +76,16 @@ class PythonMindModel(nn.Module):
         return logits
 
 
-
 if __name__ == "__main__":
 
-    # Load our trained BPE tokenizer
     tokenizer = Tokenizer.from_file(
         "tokenizer/pythonmind_bpe.json"
     )
 
     vocab_size = tokenizer.get_vocab_size()
 
-    # Create the model using the actual vocabulary
     model = PythonMindModel(vocab_size=vocab_size)
 
-    # Test with real Python code
     sample_code = "def calculate_sum(10, 20)"
 
     encoded = tokenizer.encode(sample_code)
@@ -97,9 +100,10 @@ if __name__ == "__main__":
     print("Vocabulary Size:", vocab_size)
     print("Input Shape:", input_ids.shape)
     print("Output Shape:", output.shape)
+
     print(
         "Total Parameters:",
         sum(p.numel() for p in model.parameters())
     )
 
-    print("\nBPE + PythonMind integration successful!")
+    print("\nPYTHONMIND model test successful!")

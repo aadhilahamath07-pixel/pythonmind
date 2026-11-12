@@ -1,0 +1,1048 @@
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+def multiply(a, b):
+    return a * b
+
+def divide(a, b):
+    if b == 0:
+        return None
+    return a / b
+
+def cube(n):
+    return n * n * n
+
+def is_even(n):
+    return n % 2 == 0
+
+def is_odd(n):
+    return n % 2 != 0
+
+def greet(name):
+    return "Hello " + name
+
+def calculate_average(numbers):
+    return sum(numbers) / len(numbers)
+
+def reverse_string(text):
+    return text[::-1]
+
+def count_items(items):
+    return len(items)
+
+def get_first(items):
+    return items[0]
+
+def get_last(items):
+    return items[-1]
+
+def list_sum(numbers):
+    return sum(numbers)
+
+def find_positive(numbers):
+    return [n for n in numbers if n > 0]
+
+def count_vowels(text):
+    count = 0
+    for char in text.lower():
+        if char in "aeiou":
+            count += 1
+    return count
+
+def calculate_percentage(value, total):
+    return (value / total) * 100
+
+def is_negative(n):
+    return n < 0
+
+def absolute_value(n):
+    if n < 0:
+        return -n
+    return n
+
+def power(base, exponent):
+    return base ** exponent
+
+def convert_to_upper(text):
+    return text.upper()
+
+def convert_to_lower(text):
+    return text.lower()
+
+def get_second(items):
+    return items[1]
+
+def calculate_discount(price, percentage):
+    return price - (price * percentage / 100)
+
+def is_leap_year(year):
+    return year % 400 == 0 or (year % 4 == 0 and year % 100 != 0)
+
+def sum_of_digits(number):
+    return sum(int(digit) for digit in str(abs(number)))
+
+def count_digits(number):
+    return len(str(abs(number)))
+
+def is_prime(number):
+    if number < 2:
+        return False
+    for i in range(2, int(number ** 0.5) + 1):
+        if number % i == 0:
+            return False
+    return True
+
+def factorial_recursive(n):
+    if n <= 1:
+        return 1
+    return n * factorial_recursive(n - 1)
+
+def fibonacci(n):
+    a, b = 0, 1
+    result = []
+    for _ in range(n):
+        result.append(a)
+        a, b = b, a + b
+    return result
+
+def capitalize_words(text):
+    return text.title()
+
+def count_words(text):
+    return len(text.split())
+
+def remove_spaces(text):
+    return text.replace(" ", "")
+
+def is_palindrome_text(text):
+    cleaned = text.lower().replace(" ", "")
+    return cleaned == cleaned[::-1]
+
+def merge_lists(first, second):
+    return first + second
+
+def flatten_list(nested):
+    result = []
+    for sublist in nested:
+        result.extend(sublist)
+    return result
+
+def frequency_count(items):
+    frequency = {}
+    for item in items:
+        frequency[item] = frequency.get(item, 0) + 1
+    return frequency
+
+def get_dictionary_keys(data):
+    return list(data.keys())
+
+def invert_dictionary(data):
+    return {value: key for key, value in data.items()}
+
+def merge_dictionaries(first, second):
+    return {**first, **second}
+
+def get_default_value(data, key, default):
+    return data.get(key, default)
+
+def sum_dictionary_values(data):
+    return sum(data.values())
+
+def filter_dictionary(data, threshold):
+    return {key: value for key, value in data.items() if value > threshold}
+
+def group_words_by_length(words):
+    groups = {}
+    for word in words:
+        length = len(word)
+        groups.setdefault(length, []).append(word)
+    return groups
+
+def unique_values(items):
+    return list(dict.fromkeys(items))
+
+def set_union(first, second):
+    return first | second
+
+def set_intersection(first, second):
+    return first & second
+
+def set_difference(first, second):
+    return first - second
+
+def is_subset(first, second):
+    return first.issubset(second)
+
+def linear_search(items, target):
+    for index, item in enumerate(items):
+        if item == target:
+            return index
+    return -1
+
+def bubble_sort(items):
+    result = items.copy()
+    for i in range(len(result)):
+        for j in range(len(result) - i - 1):
+            if result[j] > result[j + 1]:
+                result[j], result[j + 1] = result[j + 1], result[j]
+    return result
+
+def selection_sort(items):
+    result = items.copy()
+    for i in range(len(result)):
+        minimum = i
+        for j in range(i + 1, len(result)):
+            if result[j] < result[minimum]:
+                minimum = j
+        result[i], result[minimum] = result[minimum], result[i]
+    return result
+
+def insertion_sort(items):
+    result = items.copy()
+    for i in range(1, len(result)):
+        current = result[i]
+        j = i - 1
+        while j >= 0 and result[j] > current:
+            result[j + 1] = result[j]
+            j -= 1
+        result[j + 1] = current
+    return result
+
+def merge_sorted_lists(first, second):
+    result = []
+    i = 0
+    j = 0
+    while i < len(first) and j < len(second):
+        if first[i] <= second[j]:
+            result.append(first[i])
+            i += 1
+        else:
+            result.append(second[j])
+            j += 1
+    return result + first[i:] + second[j:]
+
+def find_all_indices(items, target):
+    return [i for i, value in enumerate(items) if value == target]
+
+def chunk_list(items, size):
+    if size <= 0:
+        return []
+    return [items[i:i + size] for i in range(0, len(items), size)]
+
+def filter_even_numbers(numbers):
+    return [n for n in numbers if n % 2 == 0]
+
+def square_all(numbers):
+    return [n * n for n in numbers]
+
+def remove_none_values(items):
+    return [item for item in items if item is not None]
+
+def transpose_matrix(matrix):
+    return [list(row) for row in zip(*matrix)]
+
+def greatest_common_divisor(a, b):
+    while b:
+        a, b = b, a % b
+    return abs(a)
+
+def sum_natural_numbers(n):
+    if n <= 0:
+        return 0
+    return n + sum_natural_numbers(n - 1)
+
+def gcd_recursive(a, b):
+    if b == 0:
+        return abs(a)
+    return gcd_recursive(b, a % b)
+
+def lcm(a, b):
+    if a == 0 or b == 0:
+        return 0
+    return abs(a * b) // greatest_common_divisor(a, b)
+
+def recursive_sum(items):
+    if not items:
+        return 0
+    return items[0] + recursive_sum(items[1:])
+
+def binary_to_decimal(binary):
+    return int(binary, 2)
+
+def decimal_to_binary(number):
+    return bin(number)[2:]
+
+def is_perfect_square(number):
+    if number < 0:
+        return False
+    root = int(number ** 0.5)
+    return root * root == number
+
+def is_armstrong(number):
+    digits = str(abs(number))
+    power_value = len(digits)
+    return sum(int(digit) ** power_value for digit in digits) == number
+
+def calculate_range(numbers):
+    if not numbers:
+        return None
+    return max(numbers) - min(numbers)
+
+def normalize_numbers(numbers):
+    if not numbers:
+        return []
+    minimum = min(numbers)
+    maximum = max(numbers)
+    if minimum == maximum:
+        return [0 for _ in numbers]
+    return [(n - minimum) / (maximum - minimum) for n in numbers]
+
+def zip_lists(first, second):
+    return list(zip(first, second))
+
+def rotate_matrix(matrix):
+    return [list(row) for row in zip(*matrix[::-1])]
+
+def matrix_row_sums(matrix):
+    return [sum(row) for row in matrix]
+
+def matrix_column_sums(matrix):
+    if not matrix:
+        return []
+    return [sum(column) for column in zip(*matrix)]
+
+def safe_divide(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return None
+
+def convert_to_integer(value):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return None
+
+def get_file_extension(filename):
+    if "." not in filename:
+        return ""
+    return filename.rsplit(".", 1)[1]
+
+def validate_email_format(email):
+    parts = email.split("@")
+    return len(parts) == 2 and "." in parts[1] and bool(parts[0])
+
+def clamp_value(value, minimum, maximum):
+    return max(minimum, min(value, maximum))
+
+def calculate_compound_interest(principal, rate, time):
+    return principal * (1 + rate / 100) ** time
+
+def count_character_frequency(text):
+    frequency = {}
+    for char in text:
+        frequency[char] = frequency.get(char, 0) + 1
+    return frequency
+
+def tuple_to_list(items):
+    return list(items)
+
+def list_to_tuple(items):
+    return tuple(items)
+
+def insert_at_position(items, index, value):
+    result = items.copy()
+    result.insert(index, value)
+    return result
+
+def rotate_string(text, positions):
+    if not text:
+        return text
+    positions %= len(text)
+    return text[positions:] + text[:positions]
+
+def remove_character(text, character):
+    return text.replace(character, "")
+
+def replace_vowels(text, replacement):
+    result = ""
+    for char in text:
+        if char.lower() in "aeiou":
+            result += replacement
+        else:
+            result += char
+    return result
+
+def count_substring(text, substring):
+    if not substring:
+        return 0
+    return text.count(substring)
+
+def are_anagrams(first, second):
+    return sorted(first.lower()) == sorted(second.lower())
+
+def remove_punctuation(text):
+    punctuation = ".,!?;:'\"-()[]{}"
+    return "".join(char for char in text if char not in punctuation)
+
+def update_dictionary(data, key, value):
+    result = data.copy()
+    result[key] = value
+    return result
+
+def find_key_by_value(data, target):
+    for key, value in data.items():
+        if value == target:
+            return key
+    return None
+
+def sort_dictionary_by_value(data):
+    return dict(sorted(data.items(), key=lambda item: item[1]))
+
+def list_to_dictionary(keys, values):
+    return dict(zip(keys, values))
+
+def find_missing_numbers(numbers, start, end):
+    present = set(numbers)
+    return [n for n in range(start, end + 1) if n not in present]
+
+def pairwise_sum(first, second):
+    return [a + b for a, b in zip(first, second)]
+
+def running_sum(numbers):
+    result = []
+    total = 0
+    for number in numbers:
+        total += number
+        result.append(total)
+    return result
+
+def partition_list(items, condition):
+    matching = [item for item in items if condition(item)]
+    remaining = [item for item in items if not condition(item)]
+    return matching, remaining
+
+def generate_even_numbers(n):
+    return [i for i in range(n) if i % 2 == 0]
+
+def generate_multiplication_table(number, limit):
+    return [number * i for i in range(1, limit + 1)]
+
+def enumerate_items(items):
+    return list(enumerate(items))
+
+def reverse_iterator(items):
+    return list(reversed(items))
+
+def find_first_match(items, condition):
+    for item in items:
+        if condition(item):
+            return item
+    return None
+
+def apply_function(items, function):
+    return [function(item) for item in items]
+
+def filter_matching_items(items, condition):
+    return [item for item in items if condition(item)]
+
+def get_unique_sorted(items):
+    return sorted(set(items))
+
+def sort_by_absolute_value(numbers):
+    return sorted(numbers, key=abs)
+
+def sort_strings_by_length(words):
+    return sorted(words, key=len)
+
+def get_bottom_n(numbers, count):
+    return sorted(numbers)[:count]
+
+def read_text_file(filename):
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            return file.read()
+    except OSError:
+        return None
+
+def write_text_file(filename, content):
+    try:
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(content)
+        return True
+    except OSError:
+        return False
+
+def append_text_file(filename, content):
+    try:
+        with open(filename, "a", encoding="utf-8") as file:
+            file.write(content)
+        return True
+    except OSError:
+        return False
+
+def read_file_lines(filename):
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            return file.readlines()
+    except OSError:
+        return []
+
+def count_file_lines(filename):
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            return sum(1 for _ in file)
+    except OSError:
+        return 0
+
+def safe_get_list_item(items, index):
+    try:
+        return items[index]
+    except IndexError:
+        return None
+
+def safe_get_nested_value(data, keys):
+    current = data
+    for key in keys:
+        if not isinstance(current, dict) or key not in current:
+            return None
+        current = current[key]
+    return current
+
+def calculate_word_frequency(text):
+    frequency = {}
+    for word in text.lower().split():
+        frequency[word] = frequency.get(word, 0) + 1
+    return frequency
+
+def calculate_power_of_two(n):
+    return 2 ** n
+
+def find_factorial_factors(n):
+    factors = []
+    for i in range(1, n + 1):
+        if n % i == 0:
+            factors.append(i)
+    return factors
+
+def find_common_divisors(a, b):
+    return [i for i in range(1, min(abs(a), abs(b)) + 1) if a % i == 0 and b % i == 0]
+
+def calculate_fibonacci_term(n):
+    if n <= 0:
+        return None
+    a, b = 0, 1
+    for _ in range(n - 1):
+        a, b = b, a + b
+    return a
+
+def count_trailing_zeros(number):
+    count = 0
+    while number > 0 and number % 10 == 0:
+        count += 1
+        number //= 10
+    return count
+
+def find_second_smallest(numbers):
+    unique = sorted(set(numbers))
+    return unique[1] if len(unique) > 1 else None
+
+def separate_positive_negative(numbers):
+    positive = [n for n in numbers if n > 0]
+    negative = [n for n in numbers if n < 0]
+    return positive, negative
+
+def find_pair_with_sum(numbers, target):
+    seen = set()
+    for number in numbers:
+        difference = target - number
+        if difference in seen:
+            return difference, number
+        seen.add(number)
+    return None
+
+def split_into_groups(items, group_size):
+    if group_size <= 0:
+        return []
+    return [items[i:i + group_size] for i in range(0, len(items), group_size)]
+
+def rotate_matrix_clockwise(matrix):
+    return [list(row) for row in zip(*matrix[::-1])]
+
+def matrix_trace(matrix):
+    return sum(matrix[i][i] for i in range(min(len(matrix), len(matrix[0]))))
+
+def count_matrix_elements(matrix):
+    return sum(len(row) for row in matrix)
+
+def invert_groups(groups):
+    result = {}
+    for key, values in groups.items():
+        for value in values:
+            result.setdefault(value, []).append(key)
+    return result
+
+def create_index_map(items):
+    return {value: index for index, value in enumerate(items)}
+
+def find_duplicate_items(items):
+    seen = set()
+    duplicates = set()
+    for item in items:
+        if item in seen:
+            duplicates.add(item)
+        seen.add(item)
+    return list(duplicates)
+
+def calculate_string_similarity(first, second):
+    if not first and not second:
+        return 1.0
+    if not first or not second:
+        return 0.0
+    common = sum(1 for a, b in zip(first, second) if a == b)
+    return common / max(len(first), len(second))
+
+def format_full_name(first, last):
+    return f"{first.strip().title()} {last.strip().title()}"
+
+def extract_numbers(text):
+    import re
+    return [int(value) for value in re.findall(r"-?\d+", text)]
+
+def validate_integer_range(value, minimum, maximum):
+    try:
+        number = int(value)
+        return minimum <= number <= maximum
+    except (ValueError, TypeError):
+        return False
+
+def safe_list_sum(items):
+    return sum(item for item in items if isinstance(item, (int, float)))
+
+def calculate_weighted_average(values, weights):
+    if not values or len(values) != len(weights):
+        return None
+    total_weight = sum(weights)
+    if total_weight == 0:
+        return None
+    return sum(value * weight for value, weight in zip(values, weights)) / total_weight
+
+def calculate_hypotenuse(a, b):
+    return (a ** 2 + b ** 2) ** 0.5
+
+def calculate_circle_area(radius):
+    return 3.141592653589793 * radius ** 2
+
+def calculate_circle_circumference(radius):
+    return 2 * 3.141592653589793 * radius
+
+def convert_seconds(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    remaining = seconds % 60
+    return hours, minutes, remaining
+
+def convert_minutes_to_seconds(minutes):
+    return minutes * 60
+
+def calculate_simple_interest(principal, rate, time):
+    return principal * rate * time / 100
+
+def is_valid_password(password):
+    return len(password) >= 8 and any(c.isdigit() for c in password) and any(c.isalpha() for c in password)
+
+def mask_string(text, visible):
+    if visible < 0:
+        visible = 0
+    return "*" * max(0, len(text) - visible) + text[-visible:] if visible else "*" * len(text)
+
+def extract_domain(email):
+    if "@" not in email:
+        return None
+    return email.rsplit("@", 1)[1]
+
+def reverse_words(sentence):
+    return " ".join(sentence.split()[::-1])
+
+def find_longest_common_prefix(words):
+    if not words:
+        return ""
+    prefix = words[0]
+    for word in words[1:]:
+        while not word.startswith(prefix):
+            prefix = prefix[:-1]
+            if not prefix:
+                return ""
+    return prefix
+
+def compress_repeated_characters(text):
+    if not text:
+        return ""
+    result = []
+    count = 1
+    for i in range(1, len(text)):
+        if text[i] == text[i - 1]:
+            count += 1
+        else:
+            result.append(text[i - 1] + str(count))
+            count = 1
+    result.append(text[-1] + str(count))
+    return "".join(result)
+
+def expand_character_counts(text):
+    import re
+    return "".join(char * int(count) for char, count in re.findall(r"(.)(\d+)", text))
+
+def find_first_non_repeating_character(text):
+    for char in text:
+        if text.count(char) == 1:
+            return char
+    return None
+
+def calculate_list_product(numbers):
+    result = 1
+    for number in numbers:
+        result *= number
+    return result
+
+def rotate_array_left(numbers, positions):
+    if not numbers:
+        return []
+    positions %= len(numbers)
+    return numbers[positions:] + numbers[:positions]
+
+def find_intersection_count(first, second):
+    return len(set(first) & set(second))
+
+def safe_string_to_float(value):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+def format_percentage(value, decimals):
+    return f"{value:.{decimals}f}%"
+
+def transpose_pairs(pairs):
+    if not pairs:
+        return []
+    return list(zip(*pairs))
+
+def find_minimum(numbers):
+    if not numbers:
+        return None
+    return min(numbers)
+
+def find_maximum_manual(numbers):
+    if not numbers:
+        return None
+    maximum = numbers[0]
+    for number in numbers[1:]:
+        if number > maximum:
+            maximum = number
+    return maximum
+
+def find_minimum_manual(numbers):
+    if not numbers:
+        return None
+    minimum = numbers[0]
+    for number in numbers[1:]:
+        if number < minimum:
+            minimum = number
+    return minimum
+
+def find_second_largest(numbers):
+    unique_numbers = sorted(set(numbers))
+    if len(unique_numbers) < 2:
+        return None
+    return unique_numbers[-2]
+
+def count_even_numbers(numbers):
+    return sum(1 for number in numbers if number % 2 == 0)
+
+def find_smallest_word(words):
+    if not words:
+        return None
+    return min(words, key=len)
+
+def find_longest_word_from_list(words):
+    if not words:
+        return None
+    return max(words, key=len)
+
+def calculate_average_length(words):
+    if not words:
+        return 0
+    return sum(len(word) for word in words) / len(words)
+
+def count_lowercase_letters(text):
+    return sum(1 for char in text if char.islower())
+
+def remove_vowels(text):
+    return "".join(char for char in text if char.lower() not in "aeiou")
+
+def find_first_even(numbers):
+    for number in numbers:
+        if number % 2 == 0:
+            return number
+    return None
+
+def find_first_negative(numbers):
+    for number in numbers:
+        if number < 0:
+            return number
+    return None
+
+def get_middle_element(items):
+    if not items:
+        return None
+    return items[len(items) // 2]
+
+def count_unique_items(items):
+    return len(set(items))
+
+def remove_negative_numbers(numbers):
+    return [number for number in numbers if number >= 0]
+
+def get_alphabetically_first(words):
+    if not words:
+        return None
+    return min(words, key=str.lower)
+
+def calculate_difference(numbers):
+    if len(numbers) < 2:
+        return None
+    return max(numbers) - min(numbers)
+
+def count_matching_values(first, second):
+    return sum(1 for item in first if item in second)
+
+def get_every_second_item(items):
+    return items[::2]
+
+def insert_separator(items, separator):
+    return separator.join(str(item) for item in items)
+
+def calculate_factorial_iterative(number):
+    if number < 0:
+        return None
+    result = 1
+    for value in range(2, number + 1):
+        result *= value
+    return result
+
+def is_power_of_two(number):
+    return number > 0 and (number & (number - 1)) == 0
+
+def count_divisors(number):
+    if number == 0:
+        return 0
+    return sum(1 for value in range(1, abs(number) + 1)
+               if number % value == 0)
+
+def find_missing_number(numbers, n):
+    expected = n * (n + 1) // 2
+    return expected - sum(numbers)
+
+def rotate_list_right(items, positions):
+    if not items:
+        return []
+    positions %= len(items)
+    return items[-positions:] + items[:-positions] if positions else items[:]
+
+def merge_alternating(first, second):
+    result = []
+    for a, b in zip(first, second):
+        result.extend([a, b])
+    return result + first[len(second):] + second[len(first):]
+
+def group_numbers_by_sign(numbers):
+    positive = [n for n in numbers if n > 0]
+    negative = [n for n in numbers if n < 0]
+    zero = [n for n in numbers if n == 0]
+    return positive, negative, zero
+
+def create_frequency_dictionary(items):
+    result = {}
+    for item in items:
+        result[item] = result.get(item, 0) + 1
+    return result
+
+def swap_dictionary_keys_values(data):
+    return {value: key for key, value in data.items()}
+
+def get_values_above_average(numbers):
+    if not numbers:
+        return []
+    average = sum(numbers) / len(numbers)
+    return [number for number in numbers if number > average]
+
+def calculate_euclidean_distance(x1, y1, x2, y2):
+    return ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+def split_into_equal_parts(items, parts):
+    if parts <= 0:
+        return []
+    size = (len(items) + parts - 1) // parts
+    return [items[i:i + size] for i in range(0, len(items), size)]
+
+def remove_common_items(first, second):
+    return [item for item in first if item not in second]
+
+def find_second_largest_distinct(numbers):
+    unique = sorted(set(numbers))
+    return unique[-2] if len(unique) >= 2 else None
+
+def count_words_starting_with(words, letter):
+    return sum(1 for word in words if word.lower().startswith(letter.lower()))
+
+def format_phone_number(digits):
+    digits = "".join(char for char in str(digits) if char.isdigit())
+    return digits
+
+def calculate_weighted_sum(values, weights):
+    return sum(value * weight for value, weight in zip(values, weights))
+
+def calculate_rectangle_area(length, width):
+    return length * width
+
+
+def calculate_rectangle_perimeter(length, width):
+    return 2 * (length + width)
+
+
+def calculate_triangle_area(base, height):
+    return 0.5 * base * height
+
+
+def calculate_sphere_volume(radius):
+    return (4 / 3) * 3.141592653589793 * radius ** 3
+
+
+def calculate_midpoint(x1, y1, x2, y2):
+    return ((x1 + x2) / 2, (y1 + y2) / 2)
+
+
+def dictionary_contains_key(data, key):
+    return key in data
+
+
+def dictionary_get_default(data, key, default):
+    return data.get(key, default)
+
+
+def count_dictionary_keys(data, keys):
+    return sum(1 for key in keys if key in data)
+
+
+def find_missing_dictionary_keys(data, required_keys):
+    return [key for key in required_keys if key not in data]
+
+
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        middle = (low + high) // 2
+        if items[middle] == target:
+            return middle
+        elif items[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return -1
+
+
+def find_item_index(items, target):
+    for index, item in enumerate(items):
+        if item == target:
+            return index
+    return -1
+
+
+def find_first_occurrence(items, target):
+    low = 0
+    high = len(items) - 1
+    result = -1
+    while low <= high:
+        middle = (low + high) // 2
+        if items[middle] == target:
+            result = middle
+            high = middle - 1
+        elif items[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return result
+
+
+def find_last_occurrence(items, target):
+    low = 0
+    high = len(items) - 1
+    result = -1
+    while low <= high:
+        middle = (low + high) // 2
+        if items[middle] == target:
+            result = middle
+            low = middle + 1
+        elif items[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return result
+
+
+def calculate_percentage_change(old_value, new_value):
+    if old_value == 0:
+        return None
+    return ((new_value - old_value) / abs(old_value)) * 100
+
+
+def calculate_part_percentage(part, whole):
+    if whole == 0:
+        return None
+    return (part / whole) * 100
+
+
+def calculate_average_change(values):
+    if len(values) < 2:
+        return 0
+    changes = [
+        values[i] - values[i - 1]
+        for i in range(1, len(values))
+    ]
+    return sum(changes) / len(changes)
+
+
+def clamp_number(value, minimum, maximum):
+    if value < minimum:
+        return minimum
+    if value > maximum:
+        return maximum
+    return value
+
+
+def find_common_dictionary_keys(first, second):
+    return [key for key in first if key in second]
+
+
+def calculate_weighted_percentage(values, weights):
+    if not values or len(values) != len(weights):
+        return None
+    total_weight = sum(weights)
+    if total_weight == 0:
+        return None
+    return sum(v * w for v, w in zip(values, weights)) / total_weight
+
+
+def find_second_occurrence(items, target):
+    count = 0
+    for index, item in enumerate(items):
+        if item == target:
+            count += 1
+            if count == 2:
+                return index
+    return -1

@@ -10,8 +10,7 @@ from core.generate import generate
 
 TOKENIZER_PATH = "tokenizer/pythonmind_bpe.json"
 CHECKPOINT_PATH = "checkpoints/pythonmind_core.pt"
-TEST_DATA_PATH = "data/python_unseen_tests.json"
-
+TEST_DATA_PATH = "data/python_unseen_tests_signatures.json"
 
 def load_model():
 

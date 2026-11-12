@@ -1,0 +1,141 @@
+
+def calculate_rectangle_area(length, width):
+    return length * width
+
+
+def calculate_rectangle_perimeter(length, width):
+    return 2 * (length + width)
+
+
+def calculate_triangle_area(base, height):
+    return 0.5 * base * height
+
+
+def calculate_sphere_volume(radius):
+    return (4 / 3) * 3.141592653589793 * radius ** 3
+
+
+def calculate_midpoint(x1, y1, x2, y2):
+    return ((x1 + x2) / 2, (y1 + y2) / 2)
+
+
+def dictionary_contains_key(data, key):
+    return key in data
+
+
+def dictionary_get_default(data, key, default):
+    return data.get(key, default)
+
+
+def count_dictionary_keys(data, keys):
+    return sum(1 for key in keys if key in data)
+
+
+def find_missing_dictionary_keys(data, required_keys):
+    return [key for key in required_keys if key not in data]
+
+
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        middle = (low + high) // 2
+        if items[middle] == target:
+            return middle
+        elif items[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return -1
+
+
+def find_item_index(items, target):
+    for index, item in enumerate(items):
+        if item == target:
+            return index
+    return -1
+
+
+def find_first_occurrence(items, target):
+    low = 0
+    high = len(items) - 1
+    result = -1
+    while low <= high:
+        middle = (low + high) // 2
+        if items[middle] == target:
+            result = middle
+            high = middle - 1
+        elif items[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return result
+
+
+def find_last_occurrence(items, target):
+    low = 0
+    high = len(items) - 1
+    result = -1
+    while low <= high:
+        middle = (low + high) // 2
+        if items[middle] == target:
+            result = middle
+            low = middle + 1
+        elif items[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return result
+
+
+def calculate_percentage_change(old_value, new_value):
+    if old_value == 0:
+        return None
+    return ((new_value - old_value) / abs(old_value)) * 100
+
+
+def calculate_part_percentage(part, whole):
+    if whole == 0:
+        return None
+    return (part / whole) * 100
+
+
+def calculate_average_change(values):
+    if len(values) < 2:
+        return 0
+    changes = [
+        values[i] - values[i - 1]
+        for i in range(1, len(values))
+    ]
+    return sum(changes) / len(changes)
+
+
+def clamp_number(value, minimum, maximum):
+    if value < minimum:
+        return minimum
+    if value > maximum:
+        return maximum
+    return value
+
+
+def find_common_dictionary_keys(first, second):
+    return [key for key in first if key in second]
+
+
+def calculate_weighted_percentage(values, weights):
+    if not values or len(values) != len(weights):
+        return None
+    total_weight = sum(weights)
+    if total_weight == 0:
+        return None
+    return sum(v * w for v, w in zip(values, weights)) / total_weight
+
+
+def find_second_occurrence(items, target):
+    count = 0
+    for index, item in enumerate(items):
+        if item == target:
+            count += 1
+            if count == 2:
+                return index
+    return -1

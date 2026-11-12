@@ -1,0 +1,59 @@
+
+[
+  {
+    "name": "Temperature Conversion",
+    "prompt": "def celsius_to_fahrenheit(celsius):",
+    "function": "celsius_to_fahrenheit",
+    "args": [0],
+    "expected": 32
+  },
+  {
+    "name": "List Maximum",
+    "prompt": "def get_largest(numbers):",
+    "function": "get_largest",
+    "args": [[9, 3, 2, 7]],
+    "expected": 9
+  },
+  {
+    "name": "String Palindrome",
+    "prompt": "def is_palindrome(text):",
+    "function": "is_palindrome",
+    "args": ["madam"],
+    "expected": true
+  },
+  {
+    "name": "Count Positive Numbers",
+    "prompt": "def count_positive(numbers):",
+    "function": "count_positive",
+    "args": [[-2, 5, 0, 8, -1]],
+    "expected": 2
+  },
+  {
+    "name": "Rectangle Perimeter",
+    "prompt": "def rectangle_perimeter(length, width):",
+    "function": "rectangle_perimeter",
+    "args": [5, 3],
+    "expected": 16
+  },
+  {
+    "name": "Number Reversal",
+    "prompt": "def reverse_number(number):",
+    "function": "reverse_number",
+    "args": [1234],
+    "expected": 4321
+  },
+  {
+    "name": "Vowel Detection",
+    "prompt": "def has_vowel(text):",
+    "function": "has_vowel",
+    "args": ["rhythm"],
+    "expected": false
+  },
+  {
+    "name": "List Average",
+    "prompt": "def list_average(numbers):",
+    "function": "list_average",
+    "args": [[2, 4, 6, 8]],
+    "expected": 5
+  }
+]

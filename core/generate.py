@@ -61,11 +61,12 @@ if __name__ == "__main__":
     eos_id = tokenizer.token_to_id("[EOS]")
 
     prompts = [
-        "def add(",
-        "def subtract(",
-        "def multiply(",
-        "def find_maximum(",
-        "def factorial("
+    "def calculate_average(numbers):",
+    "def reverse_string(text):",
+    "def find_positive(numbers):",
+    "def count_vowels(text):",
+    "def is_palindrome_text(text):",
+    "def find_maximum(numbers):"
     ]
 
     for prompt in prompts:

@@ -1,0 +1,192 @@
+def multiply(a, b):
+    return a * b
+
+def divide(a, b):
+    if b == 0:
+        return None
+    return a / b
+
+def cube(n):
+    return n * n * n
+
+def find_max(a, b):
+    if a > b:
+        return a
+    return b
+
+def factorial(n):
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
+
+def reverse_string(text):
+    return text[::-1]
+
+def get_first(items):
+    return items[0]
+
+def remainder(a, b):
+    return a % b
+
+def factorial_recursive(n):
+    if n <= 1:
+        return 1
+    return n * factorial_recursive(n - 1)
+
+def fibonacci(n):
+    a, b = 0, 1
+    result = []
+    for _ in range(n):
+        result.append(a)
+        a, b = b, a + b
+    return result
+
+def find_longest_word(sentence):
+    words = sentence.split()
+    return max(words, key=len)
+
+def rotate_list(items, positions):
+    if not items:
+        return items
+    positions %= len(items)
+    return items[-positions:] + items[:-positions]
+
+def sum_dictionary_values(data):
+    return sum(data.values())
+
+def linear_search(items, target):
+    for index, item in enumerate(items):
+        if item == target:
+            return index
+    return -1
+
+def binary_search(items, target):
+    low = 0
+    high = len(items) - 1
+    while low <= high:
+        middle = (low + high) // 2
+        if items[middle] == target:
+            return middle
+        if items[middle] < target:
+            low = middle + 1
+        else:
+            high = middle - 1
+    return -1
+
+def insertion_sort(items):
+    result = items.copy()
+    for i in range(1, len(result)):
+        current = result[i]
+        j = i - 1
+        while j >= 0 and result[j] > current:
+            result[j + 1] = result[j]
+            j -= 1
+        result[j + 1] = current
+    return result
+
+def matrix_diagonal_sum(matrix):
+    return sum(matrix[i][i] for i in range(min(len(matrix), len(matrix[0]))))
+
+def power_recursive(base, exponent):
+    if exponent == 0:
+        return 1
+    if exponent < 0:
+        return 1 / power_recursive(base, -exponent)
+    return base * power_recursive(base, exponent - 1)
+
+def recursive_sum(items):
+    if not items:
+        return 0
+    return items[0] + recursive_sum(items[1:])
+
+def binary_to_decimal(binary):
+    return int(binary, 2)
+
+def unzip_pairs(pairs):
+    if not pairs:
+        return [], []
+    first, second = zip(*pairs)
+    return list(first), list(second)
+
+def list_to_tuple(items):
+    return tuple(items)
+
+def get_initials(full_name):
+    return "".join(word[0].upper() for word in full_name.split() if word)
+
+def find_missing_numbers(numbers, start, end):
+    present = set(numbers)
+    return [n for n in range(start, end + 1) if n not in present]
+
+def pairwise_sum(first, second):
+    return [a + b for a, b in zip(first, second)]
+
+def generate_even_numbers(n):
+    return [i for i in range(n) if i % 2 == 0]
+
+def generate_multiplication_table(number, limit):
+    return [number * i for i in range(1, limit + 1)]
+
+def count_matching_items(items, condition):
+    return sum(1 for item in items if condition(item))
+
+def apply_function(items, function):
+    return [function(item) for item in items]
+
+def separate_positive_negative(numbers):
+    positive = [n for n in numbers if n > 0]
+    negative = [n for n in numbers if n < 0]
+    return positive, negative
+
+def split_into_groups(items, group_size):
+    if group_size <= 0:
+        return []
+    return [items[i:i + group_size] for i in range(0, len(items), group_size)]
+
+def matrix_trace(matrix):
+    return sum(matrix[i][i] for i in range(min(len(matrix), len(matrix[0]))))
+
+def merge_frequency_maps(first, second):
+    result = first.copy()
+    for key, value in second.items():
+        result[key] = result.get(key, 0) + value
+    return result
+
+def calculate_weighted_average(values, weights):
+    if not values or len(values) != len(weights):
+        return None
+    total_weight = sum(weights)
+    if total_weight == 0:
+        return None
+    return sum(value * weight for value, weight in zip(values, weights)) / total_weight
+
+def calculate_hypotenuse(a, b):
+    return (a ** 2 + b ** 2) ** 0.5
+
+def calculate_circle_circumference(radius):
+    return 2 * 3.141592653589793 * radius
+
+def convert_seconds(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    remaining = seconds % 60
+    return hours, minutes, remaining
+
+def find_missing_element(numbers, n):
+    return n * (n + 1) // 2 - sum(numbers)
+
+def safe_string_to_float(value):
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+def format_percentage(value, decimals):
+    return f"{value:.{decimals}f}%"
+
+def find_second_largest(numbers):
+    unique_numbers = sorted(set(numbers))
+    if len(unique_numbers) < 2:
+        return None
+    return unique_numbers[-2]
