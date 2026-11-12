@@ -20,7 +20,7 @@ tokenizer.decoder = decoders.ByteLevel()
 
 # 3. Configure tokenizer training
 trainer = BpeTrainer(
-    vocab_size=500,
+    vocab_size=800,
     min_frequency=2,
     special_tokens=["[UNK]", "[PAD]", "[BOS]", "[EOS]"]
 )

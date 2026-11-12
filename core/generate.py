@@ -9,18 +9,16 @@ TOKENIZER_PATH = "tokenizer/pythonmind_bpe.json"
 CHECKPOINT_PATH = "checkpoints/pythonmind_core.pt"
 
 
-def generate(model, input_ids, eos_id, max_new_tokens=20):
+def generate(model, input_ids, eos_id, max_new_tokens=40):
 
     model.eval()
 
     with torch.no_grad():
-
         for _ in range(max_new_tokens):
 
             input_context = input_ids[:, -model.max_seq_length:]
 
             logits = model(input_context)
-
             next_token_logits = logits[:, -1, :]
 
             next_token = torch.argmax(
@@ -42,16 +40,14 @@ def generate(model, input_ids, eos_id, max_new_tokens=20):
 
 if __name__ == "__main__":
 
-    # Load tokenizer
     tokenizer = Tokenizer.from_file(TOKENIZER_PATH)
 
-    # Load trained checkpoint
     checkpoint = torch.load(
         CHECKPOINT_PATH,
-        map_location="cpu"
+        map_location="cpu",
+        weights_only=True
     )
 
-    # Rebuild model architecture
     model = PythonMindModel(
         vocab_size=checkpoint["vocab_size"],
         embedding_dim=checkpoint["embedding_dim"],
@@ -60,36 +56,35 @@ if __name__ == "__main__":
         max_seq_length=checkpoint["max_seq_length"]
     )
 
-    # Load trained parameters
     model.load_state_dict(checkpoint["model_state_dict"])
-
-    # Prepare prompt
-    prompt = "def add("
-
-    encoded = tokenizer.encode(prompt)
-
-    input_ids = torch.tensor(
-        [encoded.ids],
-        dtype=torch.long
-    )
 
     eos_id = tokenizer.token_to_id("[EOS]")
 
-    # Generate
-    output_ids = generate(
-        model,
-        input_ids,
-        eos_id,
-        max_new_tokens=20
-    )
+    prompts = [
+        "def add(",
+        "def subtract(",
+        "def multiply(",
+        "def find_maximum(",
+        "def factorial("
+    ]
 
-    generated_text = tokenizer.decode(
-        output_ids[0].tolist(),
-        skip_special_tokens=True
-    )
+    for prompt in prompts:
 
-    print("Prompt:", prompt)
-    print("Generated Text:", generated_text)
-    print("Generated Token IDs:", output_ids[0].tolist())
+        encoded = tokenizer.encode(prompt)
 
-    print("\nTrained PYTHONMIND generation test successful!")
+        input_ids = torch.tensor([encoded.ids])
+
+        output_ids = generate(
+            model,
+            input_ids,
+            eos_id
+        )
+
+        generated_text = tokenizer.decode(
+            output_ids[0].tolist(),
+            skip_special_tokens=True
+        )
+
+        print("\n" + "=" * 45)
+        print("PROMPT:", prompt)
+        print("GENERATED CODE:\n", generated_text)
