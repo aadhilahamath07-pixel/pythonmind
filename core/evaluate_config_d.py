@@ -13,7 +13,7 @@ from core.generate import generate
 # ==========================================
 
 TOKENIZER_PATH = "tokenizer/pythonmind_targeted_bpe.json"
-CHECKPOINT_PATH = "checkpoints/pythonmind_config_d.pt"
+CHECKPOINT_PATH = "checkpoints/pythonmind_config_d_optimized.pt"
 TEST_DATA_PATH = "data/python_unseen_tests_signatures.json"
 
 MAX_NEW_TOKENS = 80
