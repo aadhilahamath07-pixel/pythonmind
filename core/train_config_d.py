@@ -19,8 +19,8 @@ TRAIN_PATH = "data/python_train_targeted_split.txt"
 VALIDATION_PATH = "data/python_validation_targeted.txt"
 TOKENIZER_PATH = "tokenizer/pythonmind_targeted_bpe.json"
 
-CHECKPOINT_PATH = "checkpoints/pythonmind_config_d.pt"
-HISTORY_PATH = "checkpoints/pythonmind_config_d_history.csv"
+CHECKPOINT_PATH = "checkpoints/pythonmind_config_d_optimized.pt"
+HISTORY_PATH = "checkpoints/pythonmind_config_d_optimized_history.csv"
 
 BLOCK_SIZE = 128
 BATCH_SIZE = 4
