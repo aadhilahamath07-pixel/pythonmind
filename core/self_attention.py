@@ -1,28 +1,24 @@
-
 import torch
 import torch.nn as nn
-import math
+import torch.nn.functional as F
 
 
 class CausalSelfAttention(nn.Module):
 
-    def __init__(self, embedding_dim, num_heads):
-
+    def __init__(self, embedding_dim, num_heads, dropout=0.1):
         super().__init__()
 
-        assert embedding_dim % num_heads == 0
+        if embedding_dim % num_heads != 0:
+            raise ValueError("embedding_dim must be divisible by num_heads")
 
         self.embedding_dim = embedding_dim
         self.num_heads = num_heads
         self.head_dim = embedding_dim // num_heads
+        self.dropout = dropout
 
-        # Generate Query, Key and Value
-        self.qkv = nn.Linear(
-            embedding_dim,
-            embedding_dim * 3
-        )
+        # One projection produces Query, Key and Value.
+        self.qkv = nn.Linear(embedding_dim, embedding_dim * 3)
 
-        # Final output projection
         self.output_projection = nn.Linear(
             embedding_dim,
             embedding_dim
@@ -30,9 +26,19 @@ class CausalSelfAttention(nn.Module):
 
     def forward(self, x):
 
+        if x.ndim != 3:
+            raise ValueError(
+                "Expected input shape (batch, sequence, embedding)"
+            )
+
         batch_size, seq_length, embedding_dim = x.shape
 
-        # Generate Q, K and V
+        if embedding_dim != self.embedding_dim:
+            raise ValueError(
+                f"Expected embedding size {self.embedding_dim}, "
+                f"received {embedding_dim}"
+            )
+
         qkv = self.qkv(x)
 
         qkv = qkv.reshape(
@@ -43,66 +49,76 @@ class CausalSelfAttention(nn.Module):
             self.head_dim
         )
 
+        # Shape: (3, batch, heads, sequence, head_dim)
         qkv = qkv.permute(2, 0, 3, 1, 4)
-
         query, key, value = qkv.unbind(0)
 
-        # Calculate attention scores
-        scores = (
-            query @ key.transpose(-2, -1)
-        ) / math.sqrt(self.head_dim)
+        dropout_p = self.dropout if self.training else 0.0
 
-        # Prevent future-token access
-        mask = torch.triu(
-            torch.ones(
-                seq_length,
-                seq_length,
-                device=x.device,
-                dtype=torch.bool
-            ),
-            diagonal=1
-        )
+        # PyTorch's optimized implementation can use fused attention
+        # kernels on supported devices. Keep a compatible fallback.
+        if hasattr(F, "scaled_dot_product_attention"):
+            output = F.scaled_dot_product_attention(
+                query,
+                key,
+                value,
+                dropout_p=dropout_p,
+                is_causal=True
+            )
+        else:
+            scores = (
+                query @ key.transpose(-2, -1)
+            ) / (self.head_dim ** 0.5)
 
-        scores = scores.masked_fill(
-            mask,
-            float("-inf")
-        )
+            causal_mask = torch.triu(
+                torch.ones(
+                    seq_length,
+                    seq_length,
+                    device=x.device,
+                    dtype=torch.bool
+                ),
+                diagonal=1
+            )
 
-        # Calculate attention probabilities
-        attention_weights = torch.softmax(
-            scores,
-            dim=-1
-        )
+            scores = scores.masked_fill(
+                causal_mask,
+                float("-inf")
+            )
 
-        # Combine information from values
-        output = attention_weights @ value
+            attention_weights = torch.softmax(scores, dim=-1)
+            attention_weights = F.dropout(
+                attention_weights,
+                p=dropout_p,
+                training=self.training
+            )
 
-        # Restore original dimensions
+            output = attention_weights @ value
+
+        # (batch, heads, sequence, head_dim)
+        # -> (batch, sequence, embedding)
         output = output.transpose(1, 2).contiguous()
-
         output = output.reshape(
             batch_size,
             seq_length,
-            embedding_dim
+            self.embedding_dim
         )
 
         return self.output_projection(output)
 
 
-# Test the implementation
 if __name__ == "__main__":
 
     embedding_dim = 64
     num_heads = 4
     sequence_length = 8
-    batch_size = 1
+    batch_size = 2
 
     model = CausalSelfAttention(
         embedding_dim,
-        num_heads
+        num_heads,
+        dropout=0.1
     )
 
-    # Simulated embedding input
     x = torch.randn(
         batch_size,
         sequence_length,
@@ -111,9 +127,13 @@ if __name__ == "__main__":
 
     output = model(x)
 
+    assert output.shape == x.shape
+
     print("Input Shape:", x.shape)
     print("Output Shape:", output.shape)
-    print("Attention Parameters:",
-          sum(p.numel() for p in model.parameters()))
-
-    print("\nSelf-attention test successful!")
+    print(
+        "Attention Parameters:",
+        sum(p.numel() for p in model.parameters())
+    )
+    print("\nCausal self-attention test successful!")
+}
