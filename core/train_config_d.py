@@ -1,6 +1,6 @@
-
 import os
 import ast
+import csv
 import random
 import torch
 import torch.nn as nn
@@ -17,10 +17,10 @@ from core.model import PythonMindModel
 
 TRAIN_PATH = "data/python_train_targeted_split.txt"
 VALIDATION_PATH = "data/python_validation_targeted.txt"
-
 TOKENIZER_PATH = "tokenizer/pythonmind_targeted_bpe.json"
 
-CHECKPOINT_PATH = "checkpoints/pythonmind_config_d.pt"
+CHECKPOINT_PATH = "checkpoints/pythonmind_config_d_optimized.pt"
+HISTORY_PATH = "checkpoints/pythonmind_config_d_optimized_history.csv"
 
 BLOCK_SIZE = 128
 BATCH_SIZE = 4
@@ -34,18 +34,30 @@ EMBEDDING_DIM = 64
 NUM_HEADS = 4
 NUM_LAYERS = 2
 MAX_SEQ_LENGTH = 128
+DROPOUT = 0.0
 
 PATIENCE = 10
+SCHEDULER_PATIENCE = 3
 RANDOM_SEED = 42
+
+EXPECTED_TRAIN_FUNCTIONS = 173
+EXPECTED_VALIDATION_FUNCTIONS = 43
 
 
 # ==========================================
-# 2. REPRODUCIBILITY
+# 2. REPRODUCIBILITY AND DEVICE
 # ==========================================
 
 def set_seed(seed):
     random.seed(seed)
     torch.manual_seed(seed)
+
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+def get_device():
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # ==========================================
@@ -65,6 +77,8 @@ def prepare_dataset(file_path, tokenizer):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     ]
 
+    examples = [example for example in examples if example]
+
     if not examples:
         raise ValueError(f"No functions found in {file_path}")
 
@@ -72,58 +86,56 @@ def prepare_dataset(file_path, tokenizer):
     pad_id = tokenizer.token_to_id("[PAD]")
 
     if eos_id is None or pad_id is None:
-        raise ValueError("Tokenizer is missing EOS or PAD token")
+        raise ValueError("Tokenizer is missing [EOS] or [PAD]")
 
     inputs = []
     targets = []
 
     for example in examples:
-
         token_ids = tokenizer.encode(example).ids + [eos_id]
-
         x = token_ids[:-1]
         y = token_ids[1:]
 
         if len(x) > BLOCK_SIZE:
             raise ValueError(
-                f"Function exceeds block size: {len(x)} tokens"
+                f"Function in {file_path} exceeds BLOCK_SIZE: "
+                f"{len(x)} > {BLOCK_SIZE}"
             )
 
         padding = BLOCK_SIZE - len(x)
-
         inputs.append(x + [pad_id] * padding)
         targets.append(y + [-100] * padding)
 
-    input_tensor = torch.tensor(inputs, dtype=torch.long)
-    target_tensor = torch.tensor(targets, dtype=torch.long)
-
-    return TensorDataset(input_tensor, target_tensor), len(examples)
+    return (
+        TensorDataset(
+            torch.tensor(inputs, dtype=torch.long),
+            torch.tensor(targets, dtype=torch.long)
+        ),
+        len(examples)
+    )
 
 
 # ==========================================
 # 4. TRAINING AND EVALUATION
 # ==========================================
 
-def run_epoch(model, loader, loss_function, optimizer=None):
+def run_epoch(model, loader, loss_function, device, optimizer=None):
 
     training = optimizer is not None
-
-    if training:
-        model.train()
-    else:
-        model.eval()
+    model.train(training)
 
     total_loss = 0.0
     total_tokens = 0
     total_correct = 0
 
     for input_ids, target_ids in loader:
+        input_ids = input_ids.to(device, non_blocking=True)
+        target_ids = target_ids.to(device, non_blocking=True)
 
         if training:
-            optimizer.zero_grad()
+            optimizer.zero_grad(set_to_none=True)
 
         with torch.set_grad_enabled(training):
-
             logits = model(input_ids)
 
             loss_sum = loss_function(
@@ -131,7 +143,7 @@ def run_epoch(model, loader, loss_function, optimizer=None):
                 target_ids.reshape(-1)
             )
 
-            valid = target_ids != -100
+            valid = target_ids.ne(-100)
             valid_tokens = valid.sum().item()
 
             if valid_tokens == 0:
@@ -141,40 +153,66 @@ def run_epoch(model, loader, loss_function, optimizer=None):
 
             if training:
                 loss.backward()
-
                 torch.nn.utils.clip_grad_norm_(
                     model.parameters(),
                     GRADIENT_CLIP
                 )
-
                 optimizer.step()
 
         predictions = logits.argmax(dim=-1)
-
-        correct = (
+        total_correct += (
             (predictions == target_ids) & valid
         ).sum().item()
 
-        total_correct += correct
-        total_loss += loss_sum.item()
+        total_loss += loss_sum.detach().item()
         total_tokens += valid_tokens
 
     if total_tokens == 0:
-        raise ValueError("No valid target tokens found")
+        raise ValueError("No valid target tokens found in this epoch")
 
-    average_loss = total_loss / total_tokens
-    accuracy = total_correct / total_tokens * 100
-
-    return average_loss, accuracy
+    return (
+        total_loss / total_tokens,
+        total_correct / total_tokens * 100
+    )
 
 
 # ==========================================
-# 5. MAIN TRAINING FUNCTION
+# 5. CHECKPOINT AND HISTORY
+# ==========================================
+
+def save_checkpoint(model, path, metadata):
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+
+    temporary_path = path + ".tmp"
+    torch.save(
+        {
+            **metadata,
+            "model_state_dict": model.state_dict()
+        },
+        temporary_path
+    )
+    os.replace(temporary_path, path)
+
+
+def append_history(path, row):
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    file_exists = os.path.exists(path)
+
+    with open(path, "a", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=list(row.keys()))
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(row)
+
+
+# ==========================================
+# 6. MAIN TRAINING FUNCTION
 # ==========================================
 
 def train():
 
     set_seed(RANDOM_SEED)
+    device = get_device()
 
     tokenizer = Tokenizer.from_file(TOKENIZER_PATH)
     vocab_size = tokenizer.get_vocab_size()
@@ -182,24 +220,35 @@ def train():
     train_dataset, train_functions = prepare_dataset(
         TRAIN_PATH, tokenizer
     )
-
     validation_dataset, validation_functions = prepare_dataset(
         VALIDATION_PATH, tokenizer
     )
 
-    if train_functions != 173 or validation_functions != 43:
-        raise ValueError("Unexpected targeted dataset split")
+    if train_functions != EXPECTED_TRAIN_FUNCTIONS:
+        raise ValueError(
+            f"Expected {EXPECTED_TRAIN_FUNCTIONS} training functions, "
+            f"found {train_functions}"
+        )
+
+    if validation_functions != EXPECTED_VALIDATION_FUNCTIONS:
+        raise ValueError(
+            f"Expected {EXPECTED_VALIDATION_FUNCTIONS} validation functions, "
+            f"found {validation_functions}"
+        )
+
+    pin_memory = device.type == "cuda"
 
     train_loader = DataLoader(
         train_dataset,
         batch_size=BATCH_SIZE,
-        shuffle=True
+        shuffle=True,
+        pin_memory=pin_memory
     )
-
     validation_loader = DataLoader(
         validation_dataset,
         batch_size=BATCH_SIZE,
-        shuffle=False
+        shuffle=False,
+        pin_memory=pin_memory
     )
 
     model = PythonMindModel(
@@ -208,13 +257,21 @@ def train():
         num_heads=NUM_HEADS,
         num_layers=NUM_LAYERS,
         max_seq_length=MAX_SEQ_LENGTH,
-        dropout=0.0
-    )
+        dropout=DROPOUT
+    ).to(device)
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
         lr=LEARNING_RATE,
         weight_decay=WEIGHT_DECAY
+    )
+
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        mode="min",
+        factor=0.5,
+        patience=SCHEDULER_PATIENCE,
+        min_lr=1e-5
     )
 
     loss_function = nn.CrossEntropyLoss(
@@ -227,7 +284,12 @@ def train():
 
     os.makedirs("checkpoints", exist_ok=True)
 
+    # Start a fresh history for this training run.
+    if os.path.exists(HISTORY_PATH):
+        os.remove(HISTORY_PATH)
+
     print("\n========== PYTHONMIND CONFIG D ==========")
+    print("Device:", device)
     print("Training Functions:", train_functions)
     print("Validation Functions:", validation_functions)
     print("Vocabulary:", vocab_size)
@@ -235,7 +297,8 @@ def train():
     print("Learning Rate:", LEARNING_RATE)
     print("Weight Decay:", WEIGHT_DECAY)
     print("Gradient Clipping:", GRADIENT_CLIP)
-    print("Dropout: Disabled during training")
+    print("Dropout:", DROPOUT)
+    print("Scheduler: ReduceLROnPlateau")
     print("Experiment: Targeted Pattern Expansion")
     print("=========================================\n")
 
@@ -245,23 +308,30 @@ def train():
             model,
             train_loader,
             loss_function,
+            device,
             optimizer
         )
 
         validation_loss, validation_accuracy = run_epoch(
             model,
             validation_loader,
-            loss_function
+            loss_function,
+            device
         )
 
-        if validation_loss < best_validation_loss:
+        scheduler.step(validation_loss)
+        current_lr = optimizer.param_groups[0]["lr"]
 
+        improved = validation_loss < best_validation_loss
+
+        if improved:
             best_validation_loss = validation_loss
             epochs_without_improvement = 0
 
-            torch.save(
+            save_checkpoint(
+                model,
+                CHECKPOINT_PATH,
                 {
-                    "model_state_dict": model.state_dict(),
                     "vocab_size": vocab_size,
                     "embedding_dim": EMBEDDING_DIM,
                     "num_heads": NUM_HEADS,
@@ -276,28 +346,38 @@ def train():
                     "random_seed": RANDOM_SEED,
                     "learning_rate": LEARNING_RATE,
                     "weight_decay": WEIGHT_DECAY,
+                    "dropout": DROPOUT,
                     "experiment": "targeted_pattern_expansion"
-                },
-                CHECKPOINT_PATH
+                }
             )
-
             print("Best checkpoint updated:", epoch)
-
         else:
             epochs_without_improvement += 1
 
-        if epoch == 1 or epoch % 5 == 0:
+        append_history(
+            HISTORY_PATH,
+            {
+                "epoch": epoch,
+                "train_loss": f"{train_loss:.6f}",
+                "train_accuracy": f"{train_accuracy:.4f}",
+                "validation_loss": f"{validation_loss:.6f}",
+                "validation_accuracy": f"{validation_accuracy:.4f}",
+                "learning_rate": f"{current_lr:.8f}",
+                "best_checkpoint_updated": improved
+            }
+        )
 
+        if epoch == 1 or epoch % 5 == 0:
             print(
                 f"Epoch [{epoch}/{EPOCHS}] "
                 f"Train Loss: {train_loss:.4f} "
                 f"Train Acc: {train_accuracy:.2f}% "
                 f"Val Loss: {validation_loss:.4f} "
-                f"Val Acc: {validation_accuracy:.2f}%"
+                f"Val Acc: {validation_accuracy:.2f}% "
+                f"LR: {current_lr:.6f}"
             )
 
         if epochs_without_improvement >= PATIENCE:
-
             print("\nEarly stopping triggered.")
             print("Stopped at epoch:", epoch)
             break
@@ -305,6 +385,7 @@ def train():
     print("\n========== CONFIG D COMPLETED ==========")
     print("Best Validation Loss:", round(best_validation_loss, 4))
     print("Checkpoint:", CHECKPOINT_PATH)
+    print("Training History:", HISTORY_PATH)
     print("========================================")
 
 

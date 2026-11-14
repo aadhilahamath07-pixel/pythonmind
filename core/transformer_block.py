@@ -1,4 +1,3 @@
-
 import torch
 import torch.nn as nn
 
@@ -31,7 +30,8 @@ class TransformerBlock(nn.Module):
 
         self.attention = CausalSelfAttention(
             embedding_dim,
-            num_heads
+            num_heads,
+            dropout=dropout
         )
 
         self.feed_forward = FeedForward(
@@ -41,46 +41,32 @@ class TransformerBlock(nn.Module):
 
     def forward(self, x):
 
-        # Attention + residual connection
-        x = x + self.attention(
-            self.layer_norm1(x)
-        )
+        # Pre-LayerNorm attention with residual connection.
+        x = x + self.attention(self.layer_norm1(x))
 
-        # Feed-forward + residual connection
-        x = x + self.feed_forward(
-            self.layer_norm2(x)
-        )
+        # Pre-LayerNorm feed-forward with residual connection.
+        x = x + self.feed_forward(self.layer_norm2(x))
 
         return x
 
 
 if __name__ == "__main__":
 
-    embedding_dim = 64
-    num_heads = 4
-    sequence_length = 8
-    batch_size = 1
-
     model = TransformerBlock(
-        embedding_dim,
-        num_heads
+        embedding_dim=64,
+        num_heads=4,
+        dropout=0.1
     )
 
-    x = torch.randn(
-        batch_size,
-        sequence_length,
-        embedding_dim
-    )
-
+    x = torch.randn(2, 8, 64)
     output = model(x)
+
+    assert output.shape == x.shape
 
     print("Input Shape:", x.shape)
     print("Output Shape:", output.shape)
-
-    total_parameters = sum(
-        p.numel() for p in model.parameters()
+    print(
+        "Transformer Block Parameters:",
+        sum(p.numel() for p in model.parameters())
     )
-
-    print("Transformer Block Parameters:", total_parameters)
-
     print("\nTransformer Block test successful!")
